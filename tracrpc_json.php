@@ -50,6 +50,13 @@ class Trac_RPC
 		$this->endpoint = $endpoint;
 	}
 	
+	/**
+	 * Get the recent changed tickets.
+	 *
+	 * @access	public
+	 * @param	int		A timestamp integer. Defaults to current day.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function get_recent_changed_tickets($date=0)
 	{
 		if($date == FALSE) {
@@ -65,8 +72,17 @@ class Trac_RPC
 		} elseif( $this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
+	/**
+	 * Get a ticket.
+	 *
+	 * @access	public
+	 * @param	string	The id of the ticket.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function get_ticket($id='')
 	{
 		if($id == '') {
@@ -80,8 +96,18 @@ class Trac_RPC
 		} elseif( $this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
+	/**
+	 * Get the recent changed tickets.
+	 *
+	 * @access	public
+	 * @param	string	The id of the ticket.
+	 * @param	int		When in the changelog.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function get_ticket_changelog($id='', $when=0)
 	{
 		if($id == '') {
@@ -95,8 +121,17 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
+	/**
+	 * Get a ticket actions.
+	 *
+	 * @access	public
+	 * @param	string	The id of the ticket.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function get_ticket_actions($id='')
 	{
 		if($id == '') {
@@ -112,6 +147,19 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get a ticket.
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket attachments.
+	 *					Possible values list, get, delete, or create.
+	 *					Default list.
+	 * @param	string	The id of the ticket.
+	 * @param	string	Filenamepath of the file to add to the ticket.
+	 * @param	string	Description of the attachment.
+	 * @param	bool	TRUE will replace the attachment if it exists FALSE will not replace it.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_attachments($action='list', $id='', $file='', $desc='', $replace=TRUE)
 	{
 		if($id == '') {
@@ -175,6 +223,17 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Create, delete, or update a ticket.
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for a ticket.
+	 *					Possible values create, update, or delete.
+	 *					Default create.
+	 * @param	string	The id of the ticket.
+	 * @param	array	Name/value paired array of data for the ticket.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_update($action='create', $id='', $data=array())
 	{
 		$method = '';
@@ -220,6 +279,13 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Search for tickets.
+	 *
+	 * @access	public
+	 * @param	string	Query string to search.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_search($query='')
 	{
 		if($query == '') {
@@ -235,6 +301,17 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all ticket components, get a specific component, create a component, edit an existing component, or delete a component
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket component.
+	 *					Possible values get_all, get, delete, update, or create.
+	 *					Default get_all.
+	 * @param	string	The name of the component.
+	 * @param	array	Name/value paired array of data for the ticket component.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_component($action='get_all', $name='', $attr=array())
 	{
 		$method = '';
@@ -282,6 +359,17 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all ticket milestones, get a specific milestone, create a milestone, edit an existing milestone, or delete a milestone
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket milestone.
+	 *					Possible values get_all, get, delete, update, or create.
+	 *					Default get_all.
+	 * @param	string	The name of the milestone.
+	 * @param	array	Name/value paired array of data for the ticket milestone.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_milestone($action='get_all', $name='', $attr=array())
 	{
 		$method = '';
@@ -329,6 +417,17 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all ticket prioritys, get a specific priority, create a priority, edit an existing priority, or delete a priority
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket priority.
+	 *					Possible values get_all, get, delete, update, or create.
+	 *					Default get_all.
+	 * @param	string	The name of the priority.
+	 * @param	string	Priority name.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_priority($action='get_all', $name='', $attr='')
 	{
 		$method = '';
@@ -376,6 +475,17 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all ticket resolutions, get a specific resolution, create a resolution, edit an existing resolution, or delete a resolution
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket resolution.
+	 *					Possible values get_all, get, delete, update, or create.
+	 *					Default get_all.
+	 * @param	string	The name of the resolution.
+	 * @param	string	Resolution name.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_resolution($action='get_all', $name='', $attr='')
 	{
 		$method = '';
@@ -423,6 +533,17 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all ticket severitys, get a specific severity, create a severity, edit an existing severity, or delete a severity
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket severity.
+	 *					Possible values get_all, get, delete, update, or create.
+	 *					Default get_all.
+	 * @param	string	The name of the severity.
+	 * @param	string	Severity name.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_severity($action='get_all', $name='', $attr='')
 	{
 		$method = '';
@@ -470,17 +591,17 @@ class Trac_RPC
 		}
 	}
 	
-	function ticket_status()
-	{
-		$this->_add_payload('ticket.status.getAll');
-		
-		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
-			return $this->get_response();
-		} elseif($this->multi_call !== FALSE) {
-			return $this->_curr_id;
-		}
-	}
-	
+	/**
+	 * Get all ticket types, get a specific type, create a type, edit an existing type, or delete a type
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket type.
+	 *					Possible values get_all, get, delete, update, or create.
+	 *					Default get_all.
+	 * @param	string	The name of the type.
+	 * @param	string	Type name.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_type($action='get_all', $name='', $attr='')
 	{
 		$method = '';
@@ -528,6 +649,17 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all ticket versions, get a specific version, create a version, edit an existing version, or delete a version
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket version.
+	 *					Possible values get_all, get, delete, update, or create.
+	 *					Default get_all.
+	 * @param	string	The name of the version.
+	 * @param	array	Name/value paired array of data for the ticket version.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function ticket_version($action='get_all', $name='', $attr=array())
 	{
 		$method = '';
@@ -574,6 +706,31 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all status.
+	 *
+	 * @access	public
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function ticket_status()
+	{
+		$this->_add_payload('ticket.status.getAll');
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif($this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+	}
+	
+	/**
+	 * Perform a global search in TRAC.
+	 *
+	 * @access	public
+	 * @param	string	Query string to search for,
+	 * @param	array	Search filters to use.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function trac_search($query='', $filter=array())
 	{
 		$params = array();
@@ -597,6 +754,12 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all search filter
+	 *
+	 * @access	public
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function get_search_filters()
 	{
 		$this->_add_payload('search.getSearchFilters');
@@ -608,6 +771,12 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Get all the API version from TRAC.
+	 *
+	 * @access	public
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
 	function get_apiversion()
 	{
 		$this->_add_payload('system.getAPIVersion');
@@ -619,6 +788,12 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Execute a RPC request to TRAC.
+	 *
+	 * @access	public
+	 * @return	bool	TRUE on a successful request. FALSE on error.
+	 */
 	function exec_call()
 	{
 		if(empty($this->_payload)) {
@@ -639,6 +814,15 @@ class Trac_RPC
 		}
 	}
 	
+	/**
+	 * Add a method to call with arguments to the payload
+	 *
+	 * @access	private
+	 * @param	string	The method name to call.
+	 * @param	array	Arguments to pass with the call.
+	 * @param	string	The id to set to the call.
+	 * @return	bool	Always TRUE.
+	 */
 	function _add_payload($method='', $args=array(), $id='')
 	{
 		if($method == '') {
@@ -676,12 +860,24 @@ class Trac_RPC
 		return TRUE;
 	}
 	
+	/**
+	 * Increment the current payload id by 1 and returns it.
+	 *
+	 * @access	private
+	 * @return	int		The current id.
+	 */
 	function _get_payload_id()
 	{
 		++$this->_curr_id;
 		return $this->_curr_id;
 	}
 	
+	/**
+	 * Serialixe the _payload into a json string.
+	 *
+	 * @access	private
+	 * @return	bool	Always TRUE.
+	 */
 	function _compile_payload()
 	{
 		if(is_array($this->_payload) === TRUE) {
@@ -691,6 +887,12 @@ class Trac_RPC
 		return TRUE;
 	}
 	
+	/**
+	 * Make the request using CURL.
+	 *
+	 * @access	private
+	 * @return	bool	TRUE is a successful CURL request. FALSE CURL isn't installed or the url or payload is empty.
+	 */
 	function _curl_action()
 	{
 		if(! function_exists('curl_init') OR $this->endpoint == '' OR empty($this->_payload)) {
@@ -732,6 +934,17 @@ class Trac_RPC
 		return TRUE;
 	}
 	
+	/**
+	 * Loop through the results and do any parsing needed.
+	 *
+	 * JSON RPC doesn't have datatypes so special objects are made for datetime
+	 * and base64 value. This method finds those objects and converts them into
+	 * proper php values. For datetime types, the value is converted into a UNIX
+	 * timestamp. Base64 decodes the value.
+	 *
+	 * @access	private
+	 * @return	int		The current id.
+	 */
 	function _parse_result($response=array())
 	{
 		if(empty($response)) {
@@ -768,35 +981,72 @@ class Trac_RPC
 		return $response->result;
 	}
 	
+	/**
+	 * Set the property user.
+	 *
+	 * @access	public
+	 * @return	bool	Always TRUE.
+	 */
 	function set_user($user='')
 	{
 		$this->user = $user;
 		return TRUE;
 	}
 	
+	/**
+	 * Set the property password.
+	 *
+	 * @access	public
+	 * @return	bool	Always TRUE.
+	 */
 	function set_password($pass='')
 	{
 		$this->password = $pass;
+		return TRUE;
 	}
 	
+	/**
+	 * Set the property endpoint.
+	 *
+	 * @access	public
+	 * @return	bool	Always TRUE.
+	 */
 	function set_endpoint($endpoint=FALSE)
 	{
 		$this->endpoint = $endpoint;
 		return TRUE;
 	}
 	
+	/**
+	 * Set the property multi_call.
+	 *
+	 * @access	public
+	 * @return	bool	Always TRUE.
+	 */
 	function set_multi_call($multi=FALSE)
 	{
 		$this->multi_call = ($multi !== FALSE) ? TRUE : FALSE;
 		return $this->multi_call;
 	}
 	
+	/**
+	 * Set the property json_decode.
+	 *
+	 * @access	public
+	 * @return	bool	Always TRUE.
+	 */
 	function set_json_decode($json=FALSE)
 	{
 		$this->json_decode = ($json !== FALSE) ? TRUE : FALSE;
 		return TRUE;
 	}
 	
+	/**
+	 * Get the response from the request.
+	 *
+	 * @access	public
+	 * @return	object	stdClass
+	 */
 	function get_response()
 	{
 		return $this->_response;
