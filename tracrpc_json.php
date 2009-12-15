@@ -1183,10 +1183,10 @@ class Trac_RPC
 						$ret[$key] = $this->_response[$key];
 					}
 					
-					return $ret
+					return $ret;
 				}
 			} else {
-				return current($this->_response)
+				return current($this->_response);
 			}
 		} else {
 			return FALSE;
