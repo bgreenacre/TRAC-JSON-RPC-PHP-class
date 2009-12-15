@@ -1,0 +1,71 @@
+================================================================================
+  PHP JSON RPC Class                                                  Ver 1.01
+================================================================================
+About
+================================================================================
+* A PHP class that contain methods for executing an RPC method on a TRAC server.
+
+================================================================================
+Usage
+================================================================================
+
+include 'tracrpc_json.php';
+
+$obj = new Trac_RPC('http://example.org/login/xmlrpc', array('user' => 'username', 'password' => 'password'));
+
+//Example single call
+$result = $obj->get_ticket('32');
+if($result === FALSE) {
+	die('ERROR: '.$obj->get_error_message());
+} else {
+	var_dump($result);
+}
+
+//Example multi call
+$obj->set_multi_call(TRUE);
+$ticket = $obj->get_ticket('32');
+$attachments = $obj->ticket_attachments('list', '32');
+$obj->exec_call();
+$ticket = $obj->get_response($ticket);
+$attachments = $obj->get_resonse($attachments);
+
+if($ticket['error_msg'] !== FALSE) {
+	var_dump($ticket);
+} else {
+	die('ERROR: '.$ticket['error_msg']);
+}
+
+if($attachments['error_msg'] !== FALSE) {
+	var_dump($attachments);
+} else {
+	die('ERROR: '.$attachments['error_msg']);
+}
+
+================================================================================
+Notes
+================================================================================
+
+================================================================================
+Disclaimers
+================================================================================
+* PHP json extension is required. You can also use the PECL json library.
+* if neither of the above JSON extensions can be used then you can use the
+	PEAR Services_JSON class to accomplish the neccessary JSON serialization.
+	Be sure to include the Services_JSON file prior to including the
+	tracrpc_json.php file.
+	http://pear.php.net/pepr/pepr-proposal-show.php?id=198
+	It is highly recommended one of the first mentioned JSON extensions are
+	installed as the PEAR class is not as efficient.
+
+================================================================================
+History
+================================================================================
+* Ver 1.01 ( 2009/12/15 )
+	+Intial public release.
+
+================================================================================
+Todo
+================================================================================
+* Add in methods to perform wiki operations. Shouldn't be to hard.
+
+================================================================================

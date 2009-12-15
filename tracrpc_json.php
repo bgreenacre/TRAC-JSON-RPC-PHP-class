@@ -2,11 +2,51 @@
 /**
  * Trac JSON RPC class.
  *
+ * Example usage:
+ * <code>
+ * include 'tracrpc_json.php';
+ *
+ * $obj = new Trac_RPC('http://example.org/login/xmlrpc', array('user' => 'username', 'password' => 'password'));
+ * 
+ * //Example single call
+ * $result = $obj->get_ticket('32');
+ * if($result === FALSE) {
+ *   die('ERROR: '.$obj->get_error());
+ * } else {
+ *   var_dump($result);
+ * }
+ *
+ * //Example multi call
+ * $obj->set_multi_call(TRUE);
+ * $ticket = $obj->get_ticket('32');
+ * $attachments = $obj->ticket_attachments('list', '32');
+ * $obj->exec_call();
+ * $ticket = $obj->get_response($ticket);
+ * $attachments = $obj->get_resonse($attachments);
+ * var_dump($ticket, $attachments);
+ * </code>
+ *
  * @package	TRAC-RPC-JSON
  * @author	Brian Greenacre
  * @license	http://www.opensource.org/licenses/artistic-license-2.0.php
  * @version	1.01
  */
+
+if(! function_exists('json_encode') AND class_exists('Services_JSON') === TRUE) {
+	function json_encode($php_variable)
+	{
+		$json = new Services_JSON(SERVICES_JSON_SUPPRESS_ERRORS);
+		return $json->encode($php_variable);
+	}
+}
+
+if(! function_exists('json_decode') AND class_exists('Services_JSON') === TRUE) {
+	function json_decode($json)
+	{
+		$json = new Services_JSON(SERVICES_JSON_SUPPRESS_ERRORS);
+		return $json->decode($json);
+	}
+}
 
 class Trac_RPC
 {
@@ -15,6 +55,7 @@ class Trac_RPC
 	var $password		= FALSE;
 	var $multi_call		= FALSE;
 	var $json_decode	= TRUE;
+	var $error			= '';
 	var $_payload		= FALSE;
 	var $_response		= FALSE;
 	var $_curr_id		= 0;
@@ -101,6 +142,25 @@ class Trac_RPC
 	}
 	
 	/**
+	 * Get a all ticket fields.
+	 *
+	 * @access	public
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function get_ticket_fields()
+	{
+		$this->_add_payload('ticket.getTicketFields');
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif( $this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
 	 * Get the recent changed tickets.
 	 *
 	 * @access	public
@@ -145,6 +205,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -221,6 +283,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -277,6 +341,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -299,6 +365,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -357,6 +425,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -415,6 +485,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -473,6 +545,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -531,6 +605,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -589,6 +665,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -647,6 +725,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -704,6 +784,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -721,6 +803,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -752,6 +836,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -769,6 +855,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -786,6 +874,8 @@ class Trac_RPC
 		} elseif($this->multi_call !== FALSE) {
 			return $this->_curr_id;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -807,7 +897,7 @@ class Trac_RPC
 		$this->_compile_payload();
 		
 		if($this->_curl_action() === TRUE) {
-			$this->_response = $this->_parse_result();
+			$this->_parse_result();
 			return TRUE;
 		} else {
 			return FALSE;
@@ -923,6 +1013,10 @@ class Trac_RPC
 		
 		$response = trim(curl_exec($ch));
 		
+		if(curl_errno($ch) > 0) {
+			$this->error = curl_error($ch);
+		}
+		
 		curl_close($ch);
 		
 		if( $this->json_decode === TRUE ) {
@@ -949,15 +1043,21 @@ class Trac_RPC
 	{
 		if(empty($response)) {
 			$response = $this->get_response();
+			$this->_response = array();
+		}
+		
+		if(! is_object($response) AND ! is_array($response)) {
+			return $response;
 		}
 		
 		foreach($response->result as $key => $resp) {
 			if(isset($resp->result) === TRUE) {
-				$response->result[$key] = $this->_parse_result($resp);
+				$this->_parse_result($resp);
 				continue;
 			}
 			
 			if(is_array($resp) === TRUE OR is_object($resp) === TRUE) {
+				$values = array();
 				foreach($resp as $r_key => $value) {
 					if($r_key === '__jsonclass__') {
 						switch($value[0])
@@ -969,16 +1069,32 @@ class Trac_RPC
 								$value = base64_decode($value[1]);
 								break;
 						}
+						
+						$values = $value;
+					} else {
+						$values[$r_key] = $value;
 					}
-					
-					$response->result[$key] = $value;
 				}
+				
+				$response->result[$key] = $values;
 			} else {
 				$response->result[$key] = $resp;
 			}
 		}
 		
-		return $response->result;
+		$id = 0;
+		if(isset($response->id) === TRUE AND $response->id != NULL) {
+			$id = $response->id;
+		}
+		
+		$this->_response[$id] = $response->result;
+		$this->_response[$id]['error_msg'] = FALSE;
+		
+		if(isset($response->error) === TRUE) {
+			$this->_response[$id]['error_msg'] = $response->error;
+		}
+		
+		return TRUE;
 	}
 	
 	/**
@@ -1045,11 +1161,43 @@ class Trac_RPC
 	 * Get the response from the request.
 	 *
 	 * @access	public
+	 * @param	int		The id of the call.
 	 * @return	object	stdClass
 	 */
-	function get_response()
+	function get_response($id=FALSE)
 	{
-		return $this->_response;
+		if(is_object($this->_response) === TRUE) {
+			return $this->_response;
+		} elseif(is_array($this->_response) === TRUE) {
+			return ($id !== FALSE) ? $this->_response[$id] : current($this->_response);
+		} else {
+			return FALSE;
+		}
+	}
+	
+	/**
+	 * Get any error message set for the request.
+	 *
+	 * @access	public
+	 * @param	bool	The id of the call made. Used for multi_calls.
+	 * @return	string	The error message
+	 * 
+	 */
+	function get_error_message($id=FALSE)
+	{
+		if($id !== FALSE AND isset($this->_response[$id]) === TRUE) {
+			if(isset($this->_response[$id]['error_msg']) === TRUE) {
+				return $$this->_response[$id]['error_msg'];
+			}
+		} else {
+			$resp = current($this->_response);
+			
+			if(isset($resp['error_msg']) === TRUE) {
+				return $resp['error_msg'];
+			}
+		}
+		
+		return $this->error;
 	}
 }
 ?>
