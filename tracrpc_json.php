@@ -1169,7 +1169,25 @@ class Trac_RPC
 		if(is_object($this->_response) === TRUE) {
 			return $this->_response;
 		} elseif(is_array($this->_response) === TRUE) {
-			return ($id !== FALSE) ? $this->_response[$id] : current($this->_response);
+			if($id !== FALSE) {
+				if(! is_array($id)) {
+					return $this->_response[$id];
+				} else {
+					$ret = array();
+					
+					foreach($id as $key) {
+						if(! isset($this->_response[$key])) {
+							continue;
+						}
+						
+						$ret[$key] = $this->_response[$key];
+					}
+					
+					return $ret
+				}
+			} else {
+				return current($this->_response)
+			}
 		} else {
 			return FALSE;
 		}
