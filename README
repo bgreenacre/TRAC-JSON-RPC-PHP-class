@@ -39,6 +39,9 @@ Notes
 ================================================================================
 Disclaimers
 ================================================================================
+* PHP 5 with the JSON extension installed and CURL extension.
+* PHP 4 can be used but you must have the PEAR json library as well as the CURL
+	extension installed.
 * PHP json extension is required. You can also use the PECL json library.
 * if neither of the above JSON extensions can be used then you can use the
 	PEAR Services_JSON class to accomplish the neccessary JSON serialization.
