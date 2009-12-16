@@ -74,7 +74,7 @@ class Trac_RPC
 			'user',
 			'password',
 			'multi_call',
-			'json_encode'
+			'json_decode'
 			);
 		
 		if(is_array($params) === TRUE) {
