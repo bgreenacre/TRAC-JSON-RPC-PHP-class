@@ -71,7 +71,6 @@ class Trac_RPC
 	function Trac_RPC($endpoint='', $params=array())
 	{
 		$properties_set = array(
-			'port',
 			'user',
 			'password',
 			'multi_call',
