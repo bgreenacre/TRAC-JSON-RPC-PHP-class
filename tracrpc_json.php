@@ -41,10 +41,10 @@ if(! function_exists('json_encode') AND class_exists('Services_JSON') === TRUE) 
 }
 
 if(! function_exists('json_decode') AND class_exists('Services_JSON') === TRUE) {
-	function json_decode($json)
+	function json_decode($php_variable)
 	{
 		$json = new Services_JSON(SERVICES_JSON_SUPPRESS_ERRORS);
-		return $json->decode($json);
+		return $json->decode($php_variable);
 	}
 }
 
@@ -227,7 +227,12 @@ class Trac_RPC
 	}
 	
 	/**
-	 * Get a ticket.
+	 * Perform requests relating to attachments.
+	 *
+	 * Get a list of attachments for a ticket.
+	 * Get an attachment for a ticket.
+	 * Delete an attachment for a ticket.
+	 * Creat an attachment for a ticket.
 	 *
 	 * @access	public
 	 * @param	string	What action to perform for ticket attachments.
