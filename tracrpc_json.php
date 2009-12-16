@@ -102,7 +102,7 @@ class Trac_RPC
 		if($date == FALSE) {
 			$date = array('datetime', date("o-m-d\T00:00:00"));
 		} elseif(is_numeric($date) === TRUE) {
-			$date = array('datetime', date("omd\TH:i:s+00:00", $date));
+			$date = array('datetime', date("o-m-d\TH:i:s+00:00", $date));
 		}
 		
 		$this->_add_payload('ticket.getRecentChanges', array(array('__jsonclass__' => $date)));
