@@ -23,23 +23,14 @@ if($result === FALSE) {
 
 //Example multi call
 $obj->set_multi_call(TRUE);
-$ticket = $obj->get_ticket('32');
-$attachments = $obj->ticket_attachments('list', '32');
+$calls = array(
+	$obj->get_ticket('32'),
+	$obj->ticket_attachments('list', '32')
+	);
+
 $obj->exec_call();
-$ticket = $obj->get_response($ticket);
-$attachments = $obj->get_resonse($attachments);
 
-if($ticket['error_msg'] !== FALSE) {
-	var_dump($ticket);
-} else {
-	die('ERROR: '.$ticket['error_msg']);
-}
-
-if($attachments['error_msg'] !== FALSE) {
-	var_dump($attachments);
-} else {
-	die('ERROR: '.$attachments['error_msg']);
-}
+var_dump($obj->get_response($calls), $obj->get_error_message($calls));
 
 ================================================================================
 Notes

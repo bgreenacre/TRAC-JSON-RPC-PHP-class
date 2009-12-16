@@ -1088,10 +1088,10 @@ class Trac_RPC
 		}
 		
 		$this->_response[$id] = $response->result;
-		$this->_response[$id]['error_msg'] = FALSE;
+		$this->error[$id] = FALSE;
 		
 		if(isset($response->error) === TRUE) {
-			$this->_response[$id]['error_msg'] = $response->error;
+			$this->error[$id] = $response->error;
 		}
 		
 		return TRUE;
@@ -1203,15 +1203,21 @@ class Trac_RPC
 	 */
 	function get_error_message($id=FALSE)
 	{
-		if($id !== FALSE AND isset($this->_response[$id]) === TRUE) {
-			if(isset($this->_response[$id]['error_msg']) === TRUE) {
-				return $$this->_response[$id]['error_msg'];
-			}
-		} else {
-			$resp = current($this->_response);
-			
-			if(isset($resp['error_msg']) === TRUE) {
-				return $resp['error_msg'];
+		if($id !== FALSE) {
+			if(! is_array($id) AND isset($this->error[$id]) === TRUE) {
+				return $this->error[$id];
+			} elseif(is_array($id) === TRUE) {
+				$ret = array();
+				
+				foreach($id as $eid) {
+					if(! isset($this->error[$eid])) {
+						continue;
+					}
+					
+					$ret[$eid] = $this->error[$eid];
+				}
+				
+				return $ret;
 			}
 		}
 		
