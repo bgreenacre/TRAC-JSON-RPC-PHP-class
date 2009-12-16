@@ -1037,7 +1037,7 @@ class Trac_RPC
 	 * timestamp. Base64 decodes the value.
 	 *
 	 * @access	private
-	 * @return	int		The current id.
+	 * @return	bool	TRUE on a non-empty result and FALSE if it is empty.
 	 */
 	function _parse_result($response=array())
 	{
@@ -1047,7 +1047,7 @@ class Trac_RPC
 		}
 		
 		if(! is_object($response) AND ! is_array($response)) {
-			return $response;
+			return FALSE;
 		}
 		
 		foreach($response->result as $key => $resp) {
