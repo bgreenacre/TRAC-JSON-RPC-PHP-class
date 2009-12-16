@@ -88,6 +88,24 @@ class Trac_RPC
 		}
 		
 		$this->endpoint = $endpoint;
+		$this->initialize();
+	}
+	
+	/**
+	 * Initialize properties of the class.
+	 *
+	 * @access	public
+	 * @return	bool	Always TRUE.
+	 */
+	function initialize()
+	{
+		$this->error = '';
+		$this->multi_call = FALSE;
+		$this->_payload = FALSE;
+		$this->_response = FALSE;
+		$this->_curr_id = 0;
+		
+		return TRUE;
 	}
 	
 	/**
@@ -878,13 +896,19 @@ class Trac_RPC
 	}
 	
 	/**
-	 * Execute a RPC request to TRAC.
+	 * Execute a RPC request to TRAC. Can take a method and arguments.
 	 *
 	 * @access	public
+	 * @param	string	A RPC method to execute.
+	 * @param	array	Arguments to pass with the RPC call.
 	 * @return	bool	TRUE on a successful request. FALSE on error.
 	 */
-	function exec_call()
+	function exec_call($method='', $args=array())
 	{
+		if($method != '') {
+			$this->_add_payload($method, $args);
+		}
+		
 		if(empty($this->_payload)) {
 			return FALSE;
 		}
