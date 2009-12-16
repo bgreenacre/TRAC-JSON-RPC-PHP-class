@@ -70,6 +70,8 @@ class Trac_RPC
 	 */
 	function Trac_RPC($endpoint='', $params=array())
 	{
+		$this->initialize();
+		
 		$properties_set = array(
 			'user',
 			'password',
@@ -88,7 +90,6 @@ class Trac_RPC
 		}
 		
 		$this->endpoint = $endpoint;
-		$this->initialize();
 	}
 	
 	/**
