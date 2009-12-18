@@ -29,7 +29,7 @@
  * @package	TRAC-RPC-JSON
  * @author	Brian Greenacre
  * @license	http://www.opensource.org/licenses/artistic-license-2.0.php
- * @version	1.01
+ * @version	1.02
  */
 
 if(! function_exists('json_encode') AND class_exists('Services_JSON') === TRUE) {
@@ -107,6 +107,116 @@ class Trac_RPC
 		$this->_curr_id = 0;
 		
 		return TRUE;
+	}
+	
+	/**
+	 * Get the recent changed wiki pages.
+	 *
+	 * @access	public
+	 * @param	int		A timestamp integer. Defaults to current day.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function get_recent_changed_wiki_pages($date=0)
+	{
+		if($date == FALSE) {
+			$date = array('datetime', date("o-m-d\T00:00:00"));
+		} elseif(is_numeric($date) === TRUE) {
+			$date = array('datetime', date("o-m-d\TH:i:s+00:00", $date));
+		}
+		
+		$this->_add_payload('wiki.getRecentChanges', array(array('__jsonclass__' => $date)));
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif( $this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
+	 * Get a wiki page in it's RAW format or HTML. Can get a version of a page.
+	 *
+	 * @access	public
+	 * @param	string	Wiki page name.
+	 * @param	int		Version of the page to get.
+	 * @param	bool	TRUE gets raw wiki page. FALSE will return HTML.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function get_wiki_page($name='', $version=0, $raw=TRUE)
+	{
+		if($name == '') {
+			return FALSE;
+		}
+		
+		if($version !== 0) {
+			if($raw !== TRUE) {
+				$this->_add_payload('wiki.getPageHTMLVersion', array($name, $version));
+			} else {
+				$this->_add_payload('wiki.getPageVersion', array($name, $version));
+			}
+		} else {
+			if($raw !== TRUE) {
+				$this->_add_payload('wiki.getPageHTML', array($name));
+			} else {
+				$this->_add_payload('wiki.getPage', array($name));
+			}
+		}
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif( $this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
+	 * Get page info for a specific wiki page and possible version of the page.
+	 *
+	 * @access	public
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function get_wiki_page_info($name='', $version=0)
+	{
+		if($name == '') {
+			return FALSE;
+		}
+		
+		if($version !== 0) {
+			$this->_add_payload('wiki.getPageInfoVersion', array($name, $version));
+		} else {
+			$this->_add_payload('wiki.getPageInfo', array($name));
+		}
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif( $this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
+	 * Get a list of wiki pages in TRAC.
+	 *
+	 * @access	public
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function get_wiki_pages()
+	{
+		$this->_add_payload('wiki.getAllPages');
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif( $this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -228,7 +338,86 @@ class Trac_RPC
 	}
 	
 	/**
-	 * Perform requests relating to attachments.
+	 * Perform requests relating to attachments for wiki pages.
+	 *
+	 * Get a list of attachments for a wiki page.
+	 * Get an attachment for a wiki page.
+	 * Delete an attachment for a wiki page.
+	 * Creat an attachment for a wiki page.
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for ticket attachments.
+	 *					Possible values list, get, delete, or create.
+	 *					Default list.
+	 * @param	string	The pagename of the wiki page.
+	 * @param	string	Filenamepath of the file to add to the wiki page.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function wiki_attachments($action='list', $name='', $file='')
+	{
+		if($name == '') {
+			return FALSE;
+		}
+		
+		$method = '';
+		$params = array($name);
+		
+		switch($action)
+		{
+			case 'list':
+			default:
+				$method = 'wiki.listAttachments';
+				break;
+			case 'get':
+				if($file == '') {
+					return FALSE;
+				}
+				
+				$method = 'wiki.getAttachment';
+				$params[] = $file;
+				break;
+			case 'delete':
+				if($file == '') {
+					return FALSE;
+				}
+				
+				$method = 'wiki.deleteAttachment';
+				$params[] = $file;
+				break;
+			case 'create':
+				if(! @is_file($file)) {
+					return FALSE;
+				}
+				
+				$contents = file_get_contents($file, FILE_BINARY);
+				
+				if($contents !== FALSE) {
+					$contents = array(
+						'__jsonclass__' => array(
+							'binary', base64_encode($contents)
+							)
+						);
+				}
+				
+				$method = 'wiki.putAttachment';
+				$params[] = basename($file);
+				$params[] = $contents;
+				break;
+		}
+		
+		$this->_add_payload($method, $params);
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif($this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
+	 * Perform requests relating to attachments for tickets.
 	 *
 	 * Get a list of attachments for a ticket.
 	 * Get an attachment for a ticket.
@@ -296,6 +485,55 @@ class Trac_RPC
 				$params[] = $desc;
 				$params[] = $contents;
 				$params[] = $replace;
+				break;
+		}
+		
+		$this->_add_payload($method, $params);
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif($this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
+	 * Create or delete a wiki page.
+	 *
+	 * @access	public
+	 * @param	string	What action to perform for a ticket.
+	 *					Possible values create or delete.
+	 *					Default create.
+	 * @param	string	The pagename of the wiki page.
+	 * @param	string	The content of the wiki page to set.
+	 * @param	array	Name/value paired array of data for the wiki page.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function wiki_update($action='create', $name='', $page='', $data=array())
+	{
+		if($name == '') {
+			return FALSE;
+		}
+		
+		$method = '';
+		$params = array();
+		
+		switch($action)
+		{
+			case 'create':
+			default:
+				$method = 'wiki.putPage';
+				$params	= array(
+					0	=> $name,
+					1	=> $page,
+					2	=> $data
+					);
+				break;
+			case 'delete':
+				$method = 'wiki.deletePage';
+				$params = $name;
 				break;
 		}
 		
@@ -853,6 +1091,30 @@ class Trac_RPC
 		}
 		
 		$this->_add_payload('search.getSearchFilters', $params);
+		
+		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
+			return $this->get_response();
+		} elseif($this->multi_call !== FALSE) {
+			return $this->_curr_id;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
+	 * Convert a string of raw wiki text to HTML.
+	 *
+	 * @access	public
+	 * @param	string	A string of raw wiki text.
+	 * @return	mixed	The result of the requet or the integer id on a muli_call. FALSE on error.
+	 */
+	function wiki_text_to_HTML($text='')
+	{
+		if($text == '') {
+			return FALSE;
+		}
+		
+		$this->_add_payload('wiki.wikiToHTML', $text);
 		
 		if($this->multi_call === FALSE AND $this->exec_call() === TRUE) {
 			return $this->get_response();
