@@ -615,7 +615,36 @@ class Trac_RPC
 	 */
 	function ticket_search($query='')
 	{
-		if($query == '') {
+		if(is_array($query) === TRUE AND ! empty($query)) {
+			$ops = array('=', '~=', '^=', '$=', '!=', '!~=', '!^=', '!$=');
+			$query_str = '';
+			foreach($query as $key => $value) {
+				if(is_array($value) === TRUE) {
+					$value = implode('|', $value);
+					$query[$key] = $value;
+				}
+				
+				if(! empty($value)) {
+					$op = '=';
+					
+					foreach($ops as $sign) {
+						if(strrpos($sign, $key) !== FALSE) {
+							$op = '';
+							break;
+						}
+					}
+					
+					$query_str .= $key.$op.$value.'&';
+				}
+			}
+			
+			if(empty($query_str)) {
+				return FALSE;
+			}
+			
+			$query = substr($query_str, 0, -1);
+			unset($query_str);
+		} elseif(empty($query)) {
 			return FALSE;
 		}
 		
@@ -1341,35 +1370,37 @@ class Trac_RPC
 			return FALSE;
 		}
 		
-		foreach($response->result as $key => $resp) {
-			if(isset($resp->result) === TRUE) {
-				$this->_parse_result($resp);
-				continue;
-			}
-			
-			if(is_array($resp) === TRUE OR is_object($resp) === TRUE) {
-				$values = array();
-				foreach($resp as $r_key => $value) {
-					if($r_key === '__jsonclass__') {
-						switch($value[0])
-						{
-							case 'datetime':
-								$value = strtotime($value[1]);
-								break;
-							case 'binary':
-								$value = base64_decode($value[1]);
-								break;
-						}
-						
-						$values = $value;
-					} else {
-						$values[$r_key] = $value;
-					}
+		if(isset($response->result) === TRUE) {
+			foreach($response->result as $key => $resp) {
+				if(isset($resp->result) === TRUE) {
+					$this->_parse_result($resp);
+					continue;
 				}
 				
-				$response->result[$key] = $values;
-			} else {
-				$response->result[$key] = $resp;
+				if(is_array($resp) === TRUE OR is_object($resp) === TRUE) {
+					$values = array();
+					foreach($resp as $r_key => $value) {
+						if($r_key === '__jsonclass__') {
+							switch($value[0])
+							{
+								case 'datetime':
+									$value = strtotime($value[1]);
+									break;
+								case 'binary':
+									$value = base64_decode($value[1]);
+									break;
+							}
+							
+							$values = $value;
+						} else {
+							$values[$r_key] = $value;
+						}
+					}
+					
+					$response->result[$key] = $values;
+				} else {
+					$response->result[$key] = $resp;
+				}
 			}
 		}
 		
@@ -1381,8 +1412,10 @@ class Trac_RPC
 		$this->_response[$id] = $response->result;
 		$this->error[$id] = FALSE;
 		
-		if(isset($response->error) === TRUE) {
-			$this->error[$id] = $response->error;
+		if(isset($response->error) === TRUE AND is_object($response->error) === TRUE) {
+			foreach($response->error as $key => $value) {
+				$this->error[$id][$key] = $value;
+			}
 		}
 		
 		return TRUE;
