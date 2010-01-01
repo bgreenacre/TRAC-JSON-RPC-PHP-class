@@ -696,6 +696,7 @@ class Trac_RPC
 				}
 				
 				$method = 'ticket.component.delete';
+				$params	= array(0 => $name);
 				break;
 			case 'update':
 			case 'create':
@@ -756,6 +757,7 @@ class Trac_RPC
 				}
 				
 				$method = 'ticket.milestone.delete';
+				$params = array(0 => $name);
 				break;
 			case 'update':
 			case 'create':
@@ -816,6 +818,7 @@ class Trac_RPC
 				}
 				
 				$method = 'ticket.priority.delete';
+				$params	= array(0 => $name);
 				break;
 			case 'update':
 			case 'create':
@@ -876,6 +879,7 @@ class Trac_RPC
 				}
 				
 				$method = 'ticket.resolution.delete';
+				$params	= array(0 => $name);
 				break;
 			case 'update':
 			case 'create':
@@ -936,6 +940,7 @@ class Trac_RPC
 				}
 				
 				$method = 'ticket.severity.delete';
+				$params	= array(0 => $name);
 				break;
 			case 'update':
 			case 'create':
@@ -996,6 +1001,7 @@ class Trac_RPC
 				}
 				
 				$method = 'ticket.type.delete';
+				$params	= array(0 => $name);
 				break;
 			case 'update':
 			case 'create':
@@ -1056,6 +1062,7 @@ class Trac_RPC
 				}
 				
 				$method = 'ticket.version.delete';
+				$params	= array(0 => $name);
 				break;
 			case 'update':
 			case 'create':
@@ -1239,8 +1246,10 @@ class Trac_RPC
 			return FALSE;
 		}
 		
-		if(! is_array($args)) {
+		if(! is_array($args) AND ! empty($args)) {
 			$args = array($args);
+		} elseif(! is_array($args)) {
+			$args = array();
 		}
 		
 		if(! is_array($this->_payload)) {
@@ -1306,7 +1315,7 @@ class Trac_RPC
 	function _curl_action()
 	{
 		if(! function_exists('curl_init') OR $this->endpoint == '' OR empty($this->_payload)) {
-			return FALSE;
+			exit('CURL not enabled.'."\n");
 		}
 		
 		$ch	= curl_init();
